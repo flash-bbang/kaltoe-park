@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="6시 땡! 부장님 피해서 칼퇴하는 박대리. 잡히면 야근 확정 ㅋ">
+<meta property="og:title" content="칼퇴 박대리 — 너는 부장님한테 바로 잡힘 ㅋ">
+<meta property="og:description" content="6시 땡! 킥보드 타고 부장님 피해서 칼퇴. 잡히면 야근 확정 ㅋ 설치 없이 바로 플레이">
+<meta property="og:image" content="https://flash-bbang.github.io/thumb_kaltoe.jpg">
+<meta property="og:url" content="https://flash-bbang.github.io/kaltoe-park/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#8d96a5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%238d96a5'/%3E%3Ccircle cx='32' cy='28' r='14' fill='%23f2c79b' stroke='%231c1614' stroke-width='3'/%3E%3Cpath d='M18 26 Q18 12 32 13 Q46 12 46 25 Q38 18 28 20 Q22 21 18 26Z' fill='%231f1a17'/%3E%3Crect x='20' y='42' width='24' height='16' rx='4' fill='%232b3550'/%3E%3Cpath d='M30 42 L34 42 L35 54 L32 57 L29 54Z' fill='%23e0453a'/%3E%3C/svg%3E">
+<title>칼퇴 박대리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Press+Start+2P&display=swap">
+<style>
+/* Layout: full-screen canvas slope with a thin HUD on top; overlays centred. */
+:root{--ink:#1c1614;--cream:#fffaf0;--butter:#ffd64a;--red:#e0453a;--muted:#3b5560;--kr:"Do Hyeon",system-ui,sans-serif;--px:"Press Start 2P","Courier New",monospace;color-scheme:light}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{margin:0;background:#8d96a5;color:var(--ink);font-family:var(--kr);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;word-break:keep-all;-webkit-tap-highlight-color:transparent}
+#app{position:relative;height:100%}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#hud{position:absolute;left:0;right:0;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:calc(10px + env(safe-area-inset-top,0px));padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));pointer-events:none}
+.hl{display:flex;flex-direction:column;line-height:1.15}
+.hl small{font-family:var(--px);font-size:8px;color:#2d5d7a}
+#hearts{font-size:18px;color:var(--red);letter-spacing:1px}
+#hearts .off{color:rgba(28,22,20,.2)}
+#score{font-family:var(--px);font-size:clamp(18px,6vw,26px);text-shadow:3px 3px 0 #fff}
+.ibtn{pointer-events:auto;width:38px;height:38px;border-radius:12px;border:3px solid var(--ink);background:var(--cream);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 0 var(--ink);padding:0}
+.ibtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.ibtn .slash{display:none}.ibtn[aria-pressed="true"] .slash{display:inline}.ibtn[aria-pressed="true"] .wave{display:none}
+.overlay{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:rgba(30,60,80,.5);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.overlay.mock{background:rgba(120,24,20,.6)}
+.card{width:min(360px,100%);max-height:100%;overflow:auto;background:var(--cream);border:4px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:20px 18px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.card>*{flex-shrink:0}
+.logo{font-family:var(--px);font-size:24px;line-height:1.4;margin:0;font-weight:400}
+.logo span{color:#d9772b}
+.sub{font-size:18px;color:var(--muted);margin:0;line-height:1.4;text-wrap:balance}
+.sub b{font-weight:400;color:var(--red)}
+.face{width:120px;height:120px}
+.nick{display:flex;align-items:center;gap:8px;width:100%;background:#eaf4fb;border:3px solid var(--ink);border-radius:999px;padding:4px 5px 4px 14px;box-sizing:border-box}
+.nick.warn{border-color:var(--red);animation:shake .4s}
+.nick label{font-size:17px;white-space:nowrap}
+.nick input{flex:1;min-width:0;font-family:var(--kr);font-size:19px;border:0;background:#fff;border-radius:999px;padding:8px 12px;outline:none;color:var(--ink)}
+.nickwarn{font-size:17px;color:#c9322a}.nickwarn:empty{display:none}
+.btn{font-family:var(--kr);font-size:22px;border:3px solid var(--ink);border-radius:14px;background:var(--butter);color:var(--ink);padding:10px 22px;cursor:pointer;box-shadow:0 4px 0 var(--ink);min-width:150px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.ghost{background:#fff;font-size:18px;padding:8px 16px;min-width:0}
+.btn:focus-visible,.ibtn:focus-visible{outline:3px solid #2a7fd1;outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.mockbig{font-size:30px;line-height:1.2;margin:0;color:var(--red);text-wrap:balance}
+.big{font-family:var(--px);font-size:26px}
+.stats{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.stats div{display:flex;flex-direction:column;gap:2px}.stats b{font-family:var(--px);font-size:12px;font-weight:400}.stats span{font-size:15px;color:var(--muted)}
+.newbest{color:#c9783f;font-size:20px}.myrank{font-size:18px;min-height:20px}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.rank-card{width:min(380px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--cream);border:4px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:16px 16px 10px;box-sizing:border-box;overflow:hidden}
+.rank-head{display:flex;align-items:center;justify-content:space-between}.rank-head h2{margin:0;font-weight:400;font-size:26px}
+.rank-note{margin:6px 0 10px;font-size:15px;color:var(--muted)}
+#rankList{list-style:none;margin:0;padding:0;overflow-y:auto;min-height:0;flex:1}
+#rankList li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 6px;border-top:2px dashed #cfdfe8}
+#rankList li.me{background:#fff1c2;border-radius:10px}
+#rankList .rk{font-family:var(--px);font-size:12px;text-align:center}
+#rankList .nm{font-size:19px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#rankList .nm small{display:block;font-size:13px;color:#5b7a83}
+#rankList b{font-family:var(--px);font-size:12px;font-weight:400}
+@media (prefers-reduced-motion:reduce){.nick.warn{animation:none}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <canvas id="c" aria-label="칼퇴 박대리. 화면을 누를 때마다 방향이 바뀌고, 꾹 누르면 그쪽으로 세게 꺾어요."></canvas>
+  <div id="hud">
+    <div class="hl"><small>퇴근길</small><b id="dist" style="font-family:var(--px);font-size:12px;font-weight:400">0 m</b><span id="hearts" hidden></span></div>
+    <div id="score">0</div>
+    <div class="row" style="gap:6px">
+      <button class="ibtn" id="rankBtn" type="button" aria-label="순위 보기"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v3h3v3a4 4 0 0 1-4 4h-.5A5 5 0 0 1 13 15.9V19h3v2H8v-2h3v-3.1A5 5 0 0 1 8.5 13H8a4 4 0 0 1-4-4V6h3zM6 8v1a2 2 0 0 0 2 2V8zm12 0h-2v3a2 2 0 0 0 2-2z" fill="currentColor"/></svg></button>
+      <button class="ibtn" id="mute" type="button" aria-label="소리 끄기" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="slash" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="start">
+    <div class="card">
+      <canvas class="face" id="stFace" width="240" height="240" aria-hidden="true"></canvas>
+      <h1 class="logo">KALTOE<br><span>PARK</span></h1>
+      <p class="sub">6시 땡! 박대리의 칼퇴 질주<br><b>탭하면 방향 전환</b>, 꾹 누르면 쭉!<br>칼퇴 게이트 통과, 방지턱·라바콘 피하기<br><b>킥보드 타면 무적 질주!</b><br>부딪히면 넘어져서 느려지고,<br><b>부장님한테 잡히면 야근 확정</b></p>
+      <div class="nick"><label for="nick">닉네임</label><input id="nick" maxlength="12" autocomplete="nickname" placeholder="닉네임을 입력하세요" enterkeyhint="go"></div>
+      <div id="nickWarn" class="nickwarn" role="alert"></div>
+      <button class="btn" id="startBtn" type="button">출발</button>
+    </div>
+  </div>
+
+  <div class="overlay mock" id="over" hidden>
+    <div class="card">
+      <canvas class="face" id="goFace" width="240" height="240" aria-hidden="true"></canvas>
+      <p class="mockbig" id="goBig">부장님한테 잡힘 ㅋㅋ</p>
+      <p class="sub" id="goSub"></p>
+      <div class="big" id="goScore">0</div>
+      <div class="stats">
+        <div><b id="goDist">0</b><span>거리</span></div>
+        <div><b id="goGates">0</b><span>통과 깃발</span></div>
+        <div><b id="goCombo">0</b><span>최대 콤보</span></div>
+        <div><b id="goBest">0</b><span>최고 점수</span></div>
+      </div>
+      <div class="newbest" id="goNew" hidden>그래도 최고 기록 ㅋ</div>
+      <div class="myrank" id="myRank"></div>
+      <button class="btn" id="againBtn" type="button">내일 다시 칼퇴</button>
+      <div class="row"><button class="btn ghost" id="rankBtn2" type="button">순위 보기</button><button class="btn ghost" id="shareBtn" type="button">기록 공유</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="rankPanel" hidden role="dialog" aria-modal="true" aria-labelledby="rankTitle">
+    <div class="rank-card">
+      <div class="rank-head"><h2 id="rankTitle">순위 TOP 30</h2><button class="ibtn" id="rankClose" type="button" aria-label="닫기">✕</button></div>
+      <p id="rankNote" class="rank-note"></p>
+      <ol id="rankList"></ol>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const store = { get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
+  const INK = '#1c1614', KR = '"Do Hyeon", system-ui, sans-serif', PX = '"Press Start 2P", monospace';
+  const rnd = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math.random() * a.length)];
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  // ================= canvas (design width 360, height follows the screen) =================
+  const cv = $('c'), ctx = cv.getContext('2d');
+  const DW = 360; let W = 0, H = 0, dpr = 1, S = 1, DH = 640;
+  function resize(){ const r = cv.getBoundingClientRect(); dpr = Math.min(3, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; S = Math.min(W / DW, H / 560); DH = H / S; }
+  addEventListener('resize', resize); resize();
+  const OX = () => (W / S - DW) / 2;   // extra side room on wide screens stays snow
+
+  // ================= drawing =================
+  function ell(c, x, y, rx, ry, rot, fill, lw){ c.beginPath(); c.ellipse(x, y, rx, ry, rot, 0, 7); c.fillStyle = fill; c.fill(); if (lw){ c.lineWidth = lw; c.strokeStyle = INK; c.stroke(); } }
+  // front view: the fox runs toward the camera, so ears up, legs swinging below
+  function drawFox(c, x, y, lean, mood, t, s = 1){
+    c.save(); c.translate(x, y); c.scale(s, s); c.rotate(lean * .35);
+    const run = Math.sin(t / 60), bob = Math.abs(run) * 1.5;
+    c.translate(0, -bob);
+    c.strokeStyle = INK; c.lineCap = 'round';
+    // legs (suit trousers) and shoes
+    c.lineWidth = 4.2; c.strokeStyle = '#2b3550';
+    c.beginPath(); c.moveTo(-4, 8); c.lineTo(-5 - run * 2, 16 + run * 2); c.moveTo(4, 8); c.lineTo(5 - run * 2, 16 - run * 2); c.stroke();
+    ell(c, -5 - run * 2, 17 + run * 2, 3, 1.8, 0, INK); ell(c, 5 - run * 2, 17 - run * 2, 3, 1.8, 0, INK);
+    // briefcase swinging in the right paw
+    c.save(); c.translate(11, 4); c.rotate(run * .5); c.strokeStyle = INK; c.lineWidth = 1.6; c.beginPath(); c.moveTo(0, 0); c.lineTo(0, 5); c.stroke();
+    c.fillStyle = '#7a4b2a'; c.fillRect(-5, 5, 10, 7); c.strokeRect(-5, 5, 10, 7); c.restore();
+    // body: suit jacket, shirt, tie flapping
+    c.fillStyle = '#2b3550'; c.strokeStyle = INK; c.lineWidth = 2.2;
+    c.beginPath(); c.moveTo(-9, -2); c.quadraticCurveTo(-10, 10, -6, 10); c.lineTo(6, 10); c.quadraticCurveTo(10, 10, 9, -2); c.quadraticCurveTo(0, -6, -9, -2); c.fill(); c.stroke();
+    c.fillStyle = '#fff'; c.beginPath(); c.moveTo(-3, -4); c.lineTo(0, 5); c.lineTo(3, -4); c.closePath(); c.fill();
+    c.save(); c.translate(0, -3); c.rotate(-lean * .8 + Math.sin(t / 90) * .25); c.fillStyle = '#e0453a'; c.beginPath(); c.moveTo(-1.5, 0); c.lineTo(1.5, 0); c.lineTo(2.5, 9); c.lineTo(0, 11); c.lineTo(-2.5, 9); c.closePath(); c.fill(); c.lineWidth = 1; c.stroke(); c.restore();
+    // left arm pumping
+    c.strokeStyle = '#2b3550'; c.lineWidth = 3.6; c.beginPath(); c.moveTo(-8, 0); c.lineTo(-12, 6 - run * 4); c.stroke(); ell(c, -12, 6.5 - run * 4, 2, 2, 0, '#f2c79b', 1.2);
+    // head: 박대리 — side-parted hair, a bead of sweat
+    c.save(); c.translate(0, -12);
+    ell(c, -9, 1, 2, 2.8, 0, '#f2c79b', 1.6); ell(c, 9, 1, 2, 2.8, 0, '#f2c79b', 1.6);
+    ell(c, 0, 0, 9, 9.5, 0, '#f2c79b', 2.2);
+    c.fillStyle = '#1f1a17'; c.beginPath(); c.moveTo(-9.3, 0); c.quadraticCurveTo(-10, -11, 0, -10.5); c.quadraticCurveTo(10, -11, 9.3, -1); c.quadraticCurveTo(4, -7 + Math.sin(t / 70) * 1.5, -3, -5); c.quadraticCurveTo(-7, -4, -9.3, 0); c.fill();
+    c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1; c.beginPath(); c.moveTo(-2, -9); c.quadraticCurveTo(3, -9, 6, -6); c.stroke();
+    if (mood === 'dizzy'){ c.fillStyle = INK; c.font = `7px ${KR}`; c.textAlign = 'center'; c.fillText('@', -3.5, 2); c.fillText('@', 3.5, 2); }
+    else if (mood === 'happy'){ c.strokeStyle = INK; c.lineWidth = 1.3; c.beginPath(); c.arc(-3.5, 1, 1.8, Math.PI, 0); c.moveTo(5.3, 1); c.arc(3.5, 1, 1.8, Math.PI, 0); c.stroke(); }
+    else if (mood === 'scared'){ ell(c, -3.5, .5, 2.2, 2.4, 0, '#fff', 1); ell(c, 3.5, .5, 2.2, 2.4, 0, '#fff', 1); ell(c, -3.5, 1, .9, .9, 0, INK); ell(c, 3.5, 1, .9, .9, 0, INK); }
+    else { ell(c, -3.5, .5, 1.3, 1.7, 0, INK); ell(c, 3.5, .5, 1.3, 1.7, 0, INK); }
+    c.fillStyle = '#5ad1ff'; c.beginPath(); c.ellipse(8.5, -3 + (t / 40 % 6), 1.3, 2, 0, 0, 7); c.fill();
+    c.strokeStyle = '#d99a6c'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(0, 2); c.lineTo(-.8, 4.2); c.lineTo(.6, 4.4); c.stroke();
+    if (mood === 'scared') ell(c, 0, 7, 1.8, 2, 0, '#7a2e2e'); else { c.strokeStyle = INK; c.lineWidth = 1.3; c.beginPath(); c.arc(0, 5.5, 2, .2, Math.PI - .2); c.stroke(); }
+    ell(c, -6, 4, 1.8, 1.1, 0, 'rgba(240,120,100,.5)'); ell(c, 6, 4, 1.8, 1.1, 0, 'rgba(240,120,100,.5)');
+    c.restore();
+    c.restore();
+  }
+  // the boss chasing from behind: a huge face rising over the top edge
+  function drawStorm(c, x, y, t, w = 420){
+    c.save(); c.translate(x, y + Math.sin(t / 150) * 3);
+    const r = 70;
+    ell(c, 0, -r * .55, r * 1.25, r, 0, '#f2c79b', 3.5);
+    c.fillStyle = '#3b3430'; c.beginPath(); c.ellipse(-r * .95, -r * .9, r * .25, r * .35, .4, 0, 7); c.ellipse(r * .95, -r * .9, r * .25, r * .35, -.4, 0, 7); c.fill();
+    c.fillStyle = 'rgba(255,255,255,.5)'; c.beginPath(); c.ellipse(-r * .3, -r * 1.3, r * .3, r * .12, -.2, 0, 7); c.fill();
+    c.fillStyle = '#e8eaf0'; c.fillRect(-r * .7, -r * .78, r * .55, r * .3); c.fillRect(r * .15, -r * .78, r * .55, r * .3); c.strokeStyle = INK; c.lineWidth = 3; c.strokeRect(-r * .7, -r * .78, r * .55, r * .3); c.strokeRect(r * .15, -r * .78, r * .55, r * .3); c.beginPath(); c.moveTo(-r * .15, -r * .65); c.lineTo(r * .15, -r * .65); c.stroke();
+    ell(c, -r * .42, -r * .62, 4, 4, 0, INK); ell(c, r * .42, -r * .62, 4, 4, 0, INK);
+    c.lineWidth = 5; c.beginPath(); c.moveTo(-r * .75, -r * .95); c.lineTo(-r * .2, -r * .85); c.moveTo(r * .75, -r * .95); c.lineTo(r * .2, -r * .85); c.stroke();
+    c.fillStyle = '#3b3430'; c.beginPath(); c.moveTo(-r * .35, -r * .2); c.quadraticCurveTo(0, -r * .32, r * .35, -r * .2); c.quadraticCurveTo(0, -r * .26, -r * .35, -r * .2); c.fill();
+    c.beginPath(); c.ellipse(0, -r * .02, r * .2, r * .12 + Math.abs(Math.sin(t / 120)) * 5, 0, 0, 7); c.fillStyle = '#7a2e2e'; c.fill(); c.lineWidth = 2.5; c.stroke();
+    // speech
+    c.font = `15px ${KR}`; c.textAlign = 'center'; const msg = ['박대리~ 잠깐 얘기 좀', '퇴근? 벌써?', '내일 아침까지 이거…'][Math.floor(t / 1600) % 3];
+    const tw = c.measureText(msg).width + 18; c.fillStyle = '#fff'; c.strokeStyle = INK; c.lineWidth = 2.5;
+    const bx = Math.min(r * .5, 175 - x - tw), by = r * .25;
+    c.beginPath(); c.roundRect ? c.roundRect(bx, by, tw, 26, 12) : c.rect(bx, by, tw, 26); c.fill(); c.stroke();
+    c.fillStyle = INK; c.textAlign = 'left'; c.fillText(msg, bx + 9, by + 18);
+    c.restore();
+  }
+  // obstacle 1: a fallen e-scooter
+  function drawTree(c, x, y, sc){
+    ell(c, x + 3, y + 6, 18 * sc, 4 * sc, 0, 'rgba(0,0,0,.18)');
+    c.save(); c.translate(x, y); c.scale(sc, sc); c.rotate(-.25);
+    c.strokeStyle = INK; c.lineWidth = 2.2; c.fillStyle = '#2fbf8f';
+    c.beginPath(); c.roundRect ? c.roundRect(-16, -2, 32, 6, 3) : c.rect(-16, -2, 32, 6); c.fill(); c.stroke();
+    c.lineWidth = 3; c.strokeStyle = '#3a3f4a'; c.beginPath(); c.moveTo(13, 0); c.lineTo(9, -24); c.lineTo(3, -24); c.moveTo(9, -24); c.lineTo(15, -25); c.stroke();
+    ell(c, -13, 5, 4, 4, 0, '#3a3f4a', 1.8); ell(c, 13, 5, 4, 4, 0, '#3a3f4a', 1.8);
+    c.fillStyle = '#fff'; c.font = `6px ${KR}`; c.textAlign = 'center'; c.fillText('킥보드', 0, 3.5);
+    c.restore();
+  }
+  function drawRock(c, x, y){ ell(c, x + 3, y + 5, 12, 4, 0, 'rgba(0,0,0,.18)'); c.fillStyle = '#ff7a2e'; c.strokeStyle = INK; c.lineWidth = 2.2; c.beginPath(); c.moveTo(x - 12, y + 5); c.lineTo(x + 12, y + 5); c.lineTo(x + 3, y - 20); c.lineTo(x - 3, y - 20); c.closePath(); c.fill(); c.stroke(); c.fillStyle = '#fff'; c.beginPath(); c.moveTo(x - 7, y - 6); c.lineTo(x + 7, y - 6); c.lineTo(x + 5, y - 11); c.lineTo(x - 5, y - 11); c.closePath(); c.fill(); }
+  function drawFlag(c, x, y, col){ c.strokeStyle = INK; c.lineWidth = 3; c.beginPath(); c.moveTo(x, y + 6); c.lineTo(x, y - 30); c.stroke(); ell(c, x, y + 6, 5, 2, 0, 'rgba(0,0,0,.2)'); }
+  function drawGateBanner(c, x1, x2, y, done){ c.fillStyle = done ? 'rgba(47,174,124,.9)' : '#2fae7c'; c.strokeStyle = INK; c.lineWidth = 2.2; c.beginPath(); c.rect(x1, y - 36, x2 - x1, 13); c.fill(); c.stroke(); c.fillStyle = '#fff'; c.font = `11px ${KR}`; c.textAlign = 'center'; c.fillText('칼퇴 EXIT →', (x1 + x2) / 2, y - 25.5); }
+  function drawFish(c, x, y, t){   // iced americano
+    c.save(); c.translate(x, y + Math.sin(t / 200 + x) * 2);
+    c.fillStyle = 'rgba(255,255,255,.75)'; c.strokeStyle = INK; c.lineWidth = 1.8;
+    c.beginPath(); c.moveTo(-6, -8); c.lineTo(6, -8); c.lineTo(4.5, 9); c.lineTo(-4.5, 9); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = '#6b3f22'; c.beginPath(); c.moveTo(-5.5, -3); c.lineTo(5.5, -3); c.lineTo(4.4, 8); c.lineTo(-4.4, 8); c.closePath(); c.fill();
+    c.fillStyle = '#d8f2ff'; c.fillRect(-3.5, -1, 3, 3); c.fillRect(1, 2, 3, 3);
+    c.strokeStyle = '#e0453a'; c.lineWidth = 1.8; c.beginPath(); c.moveTo(1, -8); c.lineTo(3, -14); c.stroke();
+    c.restore();
+  }
+  function drawScooter(c, x, y, t){ c.save(); c.translate(x, y + Math.sin(t / 180) * 2); ell(c, 2, 9, 14, 3.5, 0, 'rgba(0,0,0,.2)'); c.strokeStyle = INK; c.lineWidth = 2; c.fillStyle = '#2fbf8f'; c.beginPath(); c.rect(-12, 2, 24, 5); c.fill(); c.stroke(); c.strokeStyle = '#3a3f4a'; c.lineWidth = 3; c.beginPath(); c.moveTo(0, 2); c.lineTo(0, -22); c.moveTo(-8, -22); c.lineTo(8, -22); c.stroke(); ell(c, -9, 8, 3.5, 3.5, 0, '#3a3f4a', 1.6); ell(c, 9, 8, 3.5, 3.5, 0, '#3a3f4a', 1.6); c.fillStyle = '#ffd64a'; c.font = `9px ${KR}`; c.textAlign = 'center'; c.lineWidth = 3; c.strokeStyle = INK; c.strokeText('무적!', 0, -27); c.fillText('무적!', 0, -27); c.restore(); }
+  function drawRamp(c, x, y, sc = 1){   // speed bump (an obstacle now)
+    c.save(); c.translate(x, y); c.scale(sc, 1); c.translate(-x, -y);
+    c.fillStyle = '#ffd64a'; c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath(); c.moveTo(x - 32, y + 6); c.quadraticCurveTo(x, y - 14, x + 32, y + 6); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = INK; for (let i = -2; i <= 2; i++){ c.beginPath(); c.moveTo(x + i * 12 - 3, y + 5); c.lineTo(x + i * 12 + 3, y + 5); c.lineTo(x + i * 12 + 6, y - 5 + Math.abs(i) * 3); c.lineTo(x + i * 12, y - 5 + Math.abs(i) * 3); c.closePath(); c.fill(); }
+    c.restore();
+  }
+  function drawYeti(c, x, y, t, s = 1){
+    c.save(); c.translate(x, y); c.scale(s, s); const b = Math.sin(t / 90) * 2;
+    ell(c, -26, 4 + b, 9, 16, .5, '#f2f6fb', 2.5); ell(c, 26, 4 - b, 9, 16, -.5, '#f2f6fb', 2.5);
+    ell(c, 0, 0, 26, 28, 0, '#f2f6fb', 3);
+    ell(c, 0, 4, 16, 16, 0, '#9fc3e0');
+    c.fillStyle = INK; ell(c, -6, -1, 2.5, 3, 0, INK); ell(c, 6, -1, 2.5, 3, 0, INK);
+    c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath(); c.moveTo(-11, -8); c.lineTo(-3, -5); c.moveTo(11, -8); c.lineTo(3, -5); c.stroke();
+    c.beginPath(); c.arc(0, 10, 7, .1, Math.PI - .1); c.closePath(); c.fillStyle = '#7a2e2e'; c.fill(); c.stroke();
+    c.fillStyle = '#fff'; c.fillRect(-4, 10, 3, 3); c.fillRect(1, 10, 3, 3);
+    c.restore();
+  }
+
+  // ================= sound =================
+  let ac = null, master, sfxBus, musicBus, noiseBuf, muted = store.get('kf-mute', false), nextT = 0, step = 0, musicOn = false;
+  function ensureAudio(){
+    if (!ac){ try { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = muted ? 0 : 1; master.connect(ac.destination); sfxBus = ac.createGain(); sfxBus.connect(master); musicBus = ac.createGain(); musicBus.gain.value = .3; musicBus.connect(master);
+      noiseBuf = ac.createBuffer(1, ac.sampleRate * .5, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; nextT = ac.currentTime + .1; setInterval(schedule, 30); } catch(e){ ac = null; } }
+    if (ac && ac.state === 'suspended' && !document.hidden) ac.resume().catch(() => {});
+  }
+  function unlockAudio(){ ensureAudio(); if (!ac || unlockAudio.done) return; try { const b = ac.createBuffer(1, 1, 22050), s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(0); unlockAudio.done = true; } catch(e){} }
+  ['pointerup', 'touchend', 'click', 'keydown'].forEach(t => addEventListener(t, unlockAudio, {passive:true}));
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
+  document.addEventListener('visibilitychange', () => { if (!ac) return; if (document.hidden) ac.suspend(); else ac.resume(); });
+  function tone(f, t, d, type, vol, bus, f2){ const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(bus); o.start(t); o.stop(t + d + .05); }
+  function noise(t, d, vol, freq, bus){ const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain(); s.buffer = noiseBuf; f.type = 'bandpass'; f.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); s.connect(f); f.connect(g); g.connect(bus); s.start(t); s.stop(t + d + .02); }
+  const mtof = n => 440 * Math.pow(2, (n - 69) / 12);
+  function sfx(k, n = 1){
+    if (!ac || ac.state !== 'running') return; const t = ac.currentTime;
+    if (k === 'gate') [1047, 1319, 1568].slice(0, 1 + Math.min(2, n)).forEach((f, i) => tone(f * (1 + Math.min(n, 8) * .02), t + i * .05, .2, 'sine', .12, sfxBus));
+    if (k === 'miss') tone(300, t, .15, 'triangle', .1, sfxBus, 200);
+    if (k === 'fish') tone(1800, t, .08, 'sine', .1, sfxBus, 2600);
+    if (k === 'crash'){ noise(t, .3, .7, 500, sfxBus); tone(120, t, .3, 'sine', .4, sfxBus, 50); }
+    if (k === 'jump'){ tone(300, t, .3, 'triangle', .12, sfxBus, 900); noise(t, .2, .2, 3000, sfxBus); }
+    if (k === 'land') noise(t, .12, .4, 1500, sfxBus);
+    if (k === 'roar'){ tone(90, t, .7, 'sawtooth', .12, sfxBus, 60); noise(t, .6, .35, 300, sfxBus); }
+    if (k === 'over') [[62, 0, .4], [61, .45, .4], [60, .9, .4], [59, 1.35, 1]].forEach(([nn, dt, d]) => tone(mtof(nn - 12), t + dt, d, 'sawtooth', .08, sfxBus, mtof(nn - 12) * (d > .9 ? .94 : 1)));
+  }
+  // jaunty winter polka: oom-pah bass, sleigh bells, a bell melody
+  const PB = [[48, 55], [43, 50], [45, 52], [41, 48]], PC = [[64, 67, 72], [62, 67, 71], [64, 69, 72], [65, 69, 72]];
+  const PM = [76, 74, 72, 74, 76, 76, 76, null, 74, 74, 74, null, 76, 79, 79, null];
+  function schedule(){
+    if (!ac || ac.state !== 'running' || !musicOn){ if (ac) nextT = ac.currentTime + .05; return; }
+    const S8 = 60 / (150 + Math.min(40, dist / 60)) / 2;
+    while (nextT < ac.currentTime + .15){
+      const bar = Math.floor(step / 4) % 4, s = step % 4;
+      if (s === 0 || s === 2) tone(mtof(PB[bar][s / 2]), nextT, S8 * 1.4, 'triangle', .3, musicBus);
+      if (s === 1 || s === 3) PC[bar].forEach(n => tone(mtof(n), nextT, S8 * .7, 'triangle', .04, musicBus));
+      noise(nextT, .05, s % 2 ? .1 : .18, 7500, musicBus);
+      const m = PM[step % 16]; if (m && (step % 32) >= 16) { tone(mtof(m + 12), nextT, S8 * 1.6, 'sine', .07, musicBus); tone(mtof(m + 24), nextT, S8 * .6, 'sine', .02, musicBus); }
+      step++; nextT += S8;
+    }
+  }
+  const muteBtn = $('mute'), paintMute = () => { muteBtn.setAttribute('aria-pressed', muted); muteBtn.setAttribute('aria-label', muted ? '소리 켜기' : '소리 끄기'); };
+  paintMute(); muteBtn.addEventListener('click', () => { muted = !muted; store.set('kf-mute', muted); paintMute(); ensureAudio(); if (master) master.gain.setTargetAtTime(muted ? 0 : 1, ac.currentTime, .05); });
+
+  // ================= game =================
+  const CRASH = ['방지턱에 걸려 넘어짐 ㅋㅋ', '라바콘 헤딩 ㅋ', '구두 한 짝 날아감', '서류 다 흩어짐 ㅋㅋ', '넥타이 밟음'];
+  const MISS = ['칼퇴 실패 ㅋ', '거기 아니야 출구', '야근 각 ㅋ'];
+  let vx = 0, heading = 1, pressing = false, bonus = 0, state = 'title', px = 180, lean = 0, speed = 0, dist = 0, worldY = 0, objs = [], nextSpawn = 0, hearts = 3, score = 0, gates = 0, combo = 0, bestCombo = 0;
+  let boost = 0, inv = 0, tumble = 0, air = 0, airMax = 0, tricks = 0, yeti = null, texts = [], trail = [], shake = 0, now = performance.now(), last = now, held = {l: false, r: false};
+  let best = store.get('kf-best', 0);
+  const PY = () => Math.min(DH * .3, 200);
+  function hud(){
+    $('score').textContent = score.toLocaleString(); $('dist').textContent = `${Math.floor(dist)} m`;
+    const h = $('hearts'); h.textContent = ''; for (let i = 0; i < 3; i++){ const s = document.createElement('span'); s.textContent = '♥'; if (i >= hearts) s.className = 'off'; h.appendChild(s); }
+  }
+  function floatText(text, x, y, color = INK, size = 22, ms = 1000){ texts.push({text, x, y, color, size, at: now, ms}); }
+  function newGame(){
+    px = 180; lean = 0; vx = 0; heading = 1; speed = 120; dist = 0; worldY = 0; objs = []; nextSpawn = 260; hearts = 3; score = 0; bonus = 0; gates = 0; combo = 0; bestCombo = 0;
+    boost = 0; inv = 0; tumble = 0; air = 0; tricks = 0; yeti = null; texts = []; trail = []; state = 'play'; musicOn = true; step = 0; hud(); logPlay();
+    floatText('출발!', 180, PY() + 70, '#ffd64a', 30);
+  }
+  // spawn a row of things below the screen; y is in world units (grows downhill)
+  function spawn(y){
+    const d = dist, r = Math.random();
+    if (r < .42){
+      const gap = clamp(130 - d / 40, 80, 130), cx = rnd(40 + gap / 2, 320 - gap / 2);
+      objs.push({k:'gate', x: cx, y, gap, done: false});
+      if (Math.random() < .35) objs.push({k:'fish', x: cx, y: y - 4});
+    } else if (r < .74){
+      const n = 1 + Math.floor(Math.random() * Math.min(4, 1 + d / 400));
+      for (let i = 0; i < n; i++) objs.push({k: Math.random() < .7 ? 'tree' : 'rock', x: rnd(24, 336), y: y + rnd(-30, 30), s: rnd(.85, 1.15)});
+    } else if (r < .86){
+      objs.push({k:'ramp', x: rnd(60, 300), y});
+    } else {
+      const x0 = rnd(40, 320); for (let i = 0; i < 4; i++) objs.push({k:'fish', x: x0 + Math.sin(i) * 24, y: y + i * 26});
+    }
+  }
+  function crash(what){
+    if (inv > 0 || air > 0 || boost > 0 || state !== 'play') return;
+    combo = 0; tumble = .9; inv = 1.6; speed *= .5; shake = 1; sfx('crash'); hud();
+    floatText(pick(CRASH), 180, PY() + 70, '#e0453a', 24, 1300);
+  }
+  function gameOver(why){
+    state = 'over'; musicOn = false; setTimeout(() => sfx('over'), 300);
+    const m = Math.floor(dist);
+    const lines = m < 200 ? ['회사 문 앞에서 잡힘 ㅋㅋ', '박대리 야근 확정. 칼퇴는 무슨'] : m < 800 ? ['부장님한테 잡힘 ㅋㅋ', `${m}m 도망가다 야근 확정`] : ['그래도 꽤 도망침 ㅋ', `${m}m 갔는데 결국 야근`];
+    $('goBig').textContent = lines[0]; $('goSub').textContent = lines[1];
+    $('goScore').textContent = score.toLocaleString(); $('goDist').textContent = `${m}m`; $('goGates').textContent = gates; $('goCombo').textContent = bestCombo;
+    const nb = score > best; if (nb){ best = score; store.set('kf-best', best); } $('goBest').textContent = best.toLocaleString(); $('goNew').hidden = !nb;
+    shareText = `칼퇴 박대리 ${m}m 도망침, ${score.toLocaleString()}점 🏃💼 너는 부장님한테 바로 잡힐 듯 ㅋㅋ`;
+    setTimeout(() => { $('over').hidden = false; $('againBtn').focus(); }, why === 'yeti' ? 1200 : 900);
+    submitScore(score, m, $('myRank'));
+  }
+  function update(dt){
+    if (state !== 'play' && state !== 'caught') return;
+    const t = now;
+    if (state === 'play'){
+      const target = heading * (pressing ? .95 : .55) * speed;
+      if (tumble <= 0 && air <= 0) vx += (target - vx) * Math.min(1, dt * (pressing ? 6 : 4));
+      else if (tumble > 0) vx *= Math.pow(.05, dt);
+      lean += (clamp(vx / Math.max(80, speed), -1, 1) - lean) * Math.min(1, dt * 10);
+      if ((px <= 17 && heading < 0) || (px >= 343 && heading > 0)) heading = -heading;
+      const top = 170 + Math.min(430, dist * .22);
+      speed = Math.min(top, speed + (tumble > 0 ? 0 : 28) * dt);
+      boost = Math.max(0, boost - dt);
+      const down = speed * (1 - .3 * Math.abs(lean)) * (tumble > 0 ? .3 : 1) * (boost > 0 ? 1.7 : 1);
+      px = clamp(px + vx * dt, 16, 344); if (px <= 16 || px >= 344) vx *= -.3;
+      worldY += down * dt; dist += down * dt / 10;
+      tumble = Math.max(0, tumble - dt); inv = Math.max(0, inv - dt);
+      if (air > 0){ air -= dt; if (air <= 0){ air = 0; sfx('land'); const b = 100 + tricks * 50; bonus += b; floatText(`착지! +${b}`, px, PY() + 40, '#d9772b', 20); } }
+      // spawn ahead
+      while (nextSpawn < worldY + DH + 80){ spawn(nextSpawn); nextSpawn += rnd(150, 220) - Math.min(60, dist / 50); }
+      const py = PY();
+      for (const o of objs){
+        const sy = o.y - worldY;
+        if (o.k === 'gate' && !o.done && sy < py){
+          o.done = true;
+          if (Math.abs(px - o.x) < o.gap / 2){ gates++; combo++; bestCombo = Math.max(bestCombo, combo); const g = 50 * Math.min(10, combo); bonus += g; sfx('gate', combo); floatText(combo > 1 ? `칼퇴 x${combo} +${g}` : `칼퇴 +${g}`, o.x, py + 34, '#2fae7c', 20, 800); }
+          else if (air <= 0){ combo = 0; sfx('miss'); floatText(pick(MISS), o.x, py + 34, '#e0453a', 18, 800); }
+        }
+        if (o.gone) continue;
+        const dx = px - o.x, dy = py - sy;
+        if (o.k === 'fish' && Math.hypot(dx, dy) < 18){ o.gone = true; bonus += 30; sfx('fish'); floatText('아아 +30', o.x, sy - 10, '#2a7fd1', 16, 600); }
+        if ((o.k === 'tree' || o.k === 'rock') && !o.smashed && Math.abs(dx) < (o.k === 'tree' ? 30 * o.s : 12) + 6 && Math.abs(dy) < 9){ if (boost > 0){ o.smashed = t; bonus += 50; sfx('crash'); floatText('퍽! +50', o.x, sy - 10, '#ffd64a', 20, 700); } else crash(o.k); }
+        if (o.k === 'ramp' && !o.used && Math.abs(dx) < 20 && Math.abs(dy) < 14 && tumble <= 0){ o.used = true; boost = 4.5; inv = 0; sfx('jump'); floatText(pick(['킥보드 탑승! 무적!', '공유 킥보드 개꿀', '퇴근 부스터 ON']), 180, py + 70, '#ffd64a', 24, 1000); }
+      }
+      objs = objs.filter(o => o.y - worldY > -80);
+      // the yeti joins at 1000 m and keeps pace with your top speed; slow down and it closes in
+      if (!yeti){ yeti = {gap: 180}; sfx('roar'); floatText('부장님이 쫓아온다!! 도망쳐!', 180, py + 110, '#e0453a', 24, 1800); }
+      if (yeti){ const ys = top * .8 + Math.min(40, dist / 60); yeti.gap = clamp(yeti.gap + (down - ys) * dt, -10, 200); if (yeti.gap <= 0){ state = 'caught'; sfx('roar'); shake = 1.2; hearts = 0; hud(); gameOver('yeti'); } }
+      score = Math.floor(dist) + bonus;
+      trail.push({x: px, y: worldY + py, l: lean}); if (trail.length > 90) trail.shift();
+      hud();
+    }
+  }
+  function draw(){
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#9aa3b2'); g.addColorStop(1, '#848d9c'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const sh = shake > 0 ? (Math.random() - .5) * 10 * shake : 0; shake = Math.max(0, shake - .04);
+    ctx.setTransform(dpr * S, 0, 0, dpr * S, dpr * (OX() * S + sh), 0);
+    const c = ctx, py = PY(), t = now;
+    // road: lane dashes and a crosswalk every so often
+    c.fillStyle = 'rgba(255,255,255,.7)';
+    for (const lx of [120, 240]) for (let k = -1; k < DH / 60 + 2; k++){ const y = k * 60 - (worldY % 60); c.fillRect(lx - 2, y, 4, 30); }
+    { const cy = 900 - (worldY % 1800); if (cy > -60 && cy < DH + 60) for (let k = 0; k < 9; k++) c.fillRect(14 + k * 38, cy, 24, 40); }
+    // edges
+    c.fillStyle = '#c9ccd3'; c.fillRect(-200, 0, 206, DH); c.fillRect(354, 0, 206, DH); c.fillStyle = INK; c.fillRect(4, 0, 3, DH); c.fillRect(353, 0, 3, DH);
+    // objects, back to front
+    const list = objs.slice().sort((a, b) => a.y - b.y);
+    for (const o of list){
+      const y = o.y - worldY; if (y < -60 || y > DH + 60) continue;
+      if (o.k === 'gate'){ drawFlag(c, o.x - o.gap / 2, y); drawFlag(c, o.x + o.gap / 2, y); drawGateBanner(c, o.x - o.gap / 2, o.x + o.gap / 2, y, o.done); if (!o.done){ c.setLineDash([4, 6]); c.strokeStyle = 'rgba(28,22,20,.15)'; c.beginPath(); c.moveTo(o.x - o.gap / 2, y); c.lineTo(o.x + o.gap / 2, y); c.stroke(); c.setLineDash([]); } }
+      else if (o.k === 'tree'){ if (o.smashed){ const k = (t - o.smashed) / 500; if (k < 1){ c.save(); c.translate(o.x + k * 120 * (o.x < 180 ? -1 : 1), y - k * 80); c.rotate(k * 6); drawRamp(c, 0, 0, o.s); c.restore(); } } else drawRamp(c, o.x, y, o.s); }
+      else if (o.k === 'rock'){ if (o.smashed){ const k = (t - o.smashed) / 500; if (k < 1){ c.save(); c.translate(o.x + k * 120 * (o.x < 180 ? -1 : 1), y - k * 80); c.rotate(k * 6); drawRock(c, 0, 0); c.restore(); } } else drawRock(c, o.x, y); }
+      else if (o.k === 'ramp' && !o.used) drawScooter(c, o.x, y, t);
+      else if (o.k === 'fish' && !o.gone) drawFish(c, o.x, y, t);
+    }
+    // penguin
+    if (state !== 'title'){
+      const hop = air > 0 ? Math.sin((1 - air / airMax) * Math.PI) * 26 : 0, sc = 1.25 + hop / 60;
+      ell(c, px, py + 15, 11 - Math.min(6, (air > 0 ? hop / 5 : 0)), 3.5, 0, 'rgba(0,0,0,.22)');
+      const blink = inv > 0 && tumble <= 0 && Math.floor(t / 90) % 2;
+      if (!blink){
+        if (tumble > 0){ c.save(); c.translate(px, py); c.rotate(t / 60); drawFox(c, 0, 0, 0, 'dizzy', t, 1.25); c.restore(); }
+        else if (boost > 0){
+          c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 2; for (let k = 0; k < 5; k++){ const lx = px - 20 + k * 10, ly = py - 40 - ((t / 3 + k * 37) % 60); c.beginPath(); c.moveTo(lx, ly); c.lineTo(lx, ly - 18); c.stroke(); }
+          c.save(); c.translate(px, py + 12); c.rotate(lean * .3); c.strokeStyle = INK; c.lineWidth = 2; c.fillStyle = '#2fbf8f'; c.beginPath(); c.rect(-6, -2, 12, 22); c.fill(); c.stroke(); ell(c, 0, 22, 3.5, 3.5, 0, '#3a3f4a', 1.6); c.restore();
+          drawFox(c, px, py - 4, lean, 'happy', t, sc);
+          c.save(); c.translate(px, py + 2); c.rotate(lean * .3); c.strokeStyle = '#3a3f4a'; c.lineWidth = 3; c.beginPath(); c.moveTo(-10, 0); c.lineTo(10, 0); c.stroke(); c.restore();
+          if (boost < 1.2 && Math.floor(t / 120) % 2){ c.fillStyle = '#e0453a'; c.font = `14px ${KR}`; c.textAlign = 'center'; c.fillText('배터리 부족!', px, py - 48); }
+        }
+        else drawFox(c, px, py - hop, lean + (air > 0 ? Math.sin(t / 70) * .6 : 0), yeti && yeti.gap < 90 ? 'scared' : air > 0 ? 'happy' : 'idle', t, sc);
+      }
+    }
+    // yeti chasing from the top
+    if (yeti && state !== 'title'){
+      const yy = py - 40 - yeti.gap * .7; drawStorm(c, 180, yy, t);
+      if (yeti.gap < 110 && dist > 30){ c.fillStyle = '#e0453a'; c.font = `18px ${KR}`; c.textAlign = 'center'; c.lineWidth = 4; c.strokeStyle = '#fff'; c.strokeText('부장님 바로 뒤!! 직진해!', 180, py + 110); c.fillText('부장님 바로 뒤!! 직진해!', 180, py + 110); }
+    }
+    // texts
+    texts = texts.filter(x => now - x.at < x.ms);
+    for (const x of texts){ const k = (now - x.at) / x.ms; c.save(); c.globalAlpha = 1 - Math.max(0, k - .7) / .3; c.font = `${x.size}px ${KR}`; c.textAlign = 'center'; c.lineJoin = 'round'; c.lineWidth = 5; c.strokeStyle = x.color === '#ffd64a' ? INK : '#fff'; c.strokeText(x.text, x.x, x.y - k * 18); c.fillStyle = x.color; c.fillText(x.text, x.x, x.y - k * 18); c.restore(); }
+    // touch hint
+    if (state === 'play' && dist < 60){
+      c.globalAlpha = .7; c.fillStyle = '#c45a1f'; c.font = `20px ${KR}`; c.textAlign = 'center';
+      c.fillStyle = '#fff'; c.fillText('탭 = 방향 전환 · 꾹 = 쭉 꺾기', 180, DH - 60); c.globalAlpha = 1;
+    }
+  }
+  function face(id, mood){ const c = $(id).getContext('2d'); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, 240, 240); c.fillStyle = '#dfe3ea'; c.beginPath(); c.arc(120, 130, 100, 0, 7); c.fill();
+    c.save(); c.beginPath(); c.arc(120, 130, 100, 0, 7); c.clip();
+    if (id === 'goFace' && mood === 'yeti'){ c.save(); c.translate(120, 150); c.scale(.8, .8); drawStorm(c, 0, 40, now); c.restore(); drawFox(c, 150, 190, .3, 'scared', now, 2.6); } else drawFox(c, 120, 150, Math.sin(now / 400) * .3, mood, now, 3.6);
+    c.restore(); }
+  let overWhy = 'crash';
+  function loop(){
+    now = performance.now(); const dt = Math.min(.05, (now - last) / 1000); last = now;
+    update(dt); draw();
+    if (!$('start').hidden) face('stFace', 'happy');
+    if (!$('over').hidden) face('goFace', $('goBig').textContent.includes('부장님') ? 'yeti' : 'dizzy');
+    requestAnimationFrame(loop);
+  }
+
+  // ================= input: hold left / right half =================
+  const pointers = new Set();
+  function flip(){ if (state !== 'play') return; heading = -heading; }
+  cv.addEventListener('pointerdown', e => { if (state !== 'play') return; e.preventDefault(); pointers.add(e.pointerId); flip(); pressing = true; });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => cv.addEventListener(t, e => { pointers.delete(e.pointerId); pressing = pointers.size > 0; }));
+  addEventListener('keydown', e => { if (e.target.tagName === 'INPUT' || e.repeat) return; if (e.key === ' ' || e.key === 'ArrowUp'){ flip(); pressing = true; e.preventDefault(); } if (e.key === 'ArrowLeft'){ heading = -1; pressing = true; e.preventDefault(); } if (e.key === 'ArrowRight'){ heading = 1; pressing = true; e.preventDefault(); } });
+  addEventListener('keyup', e => { if ([' ', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key)) pressing = false; });
+
+  // ================= nickname & buttons =================
+  let nick = ''; try { nick = localStorage.getItem('spacexxx-nick') || ''; } catch(e){}
+  const nickEl = $('nick'); nickEl.value = nick;
+  nickEl.addEventListener('input', () => { nick = nickEl.value.replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 12); try { localStorage.setItem('spacexxx-nick', nick); } catch(e){} if (nick){ $('nickWarn').textContent = ''; nickEl.parentElement.classList.remove('warn'); } });
+  nickEl.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('startBtn').click(); } });
+  function requireNick(){ if (nick) return true; const b = nickEl.parentElement; b.classList.remove('warn'); void b.offsetWidth; b.classList.add('warn'); $('nickWarn').textContent = '닉네임을 입력하세요'; nickEl.focus(); return false; }
+  $('startBtn').addEventListener('click', () => { if (!requireNick()) return; ensureAudio(); $('start').hidden = true; newGame(); });
+  $('againBtn').addEventListener('click', () => { $('over').hidden = true; $('myRank').textContent = ''; pointers.clear(); pressing = false; ensureAudio(); newGame(); });
+
+  // ================= leaderboard =================
+  // Fill these in to turn on worldwide ranking. Left empty, rankings stay on this device.
+  const LEADERBOARD = { projectId: 'space-xxx', apiKey: 'AIzaSyAOEpHjYw322A0Vfrjmp2KNw9WAYUGURtg' };
+  const COLLECTION = 'kaltoe_scores', REMOTE = !!(LEADERBOARD.projectId && LEADERBOARD.apiKey), LB_LIMIT = 100;
+  let submittedBest = store.get('kf-submitted', 0), shareText = '';
+  const playerName = () => nick || '익명';
+  const fsBase = () => `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(LEADERBOARD.projectId)}/databases/(default)/documents`;
+  function logPlay(){ if (!REMOTE) return; try { fetch(`${fsBase()}/plays?key=${LEADERBOARD.apiKey}`, {method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true, body: JSON.stringify({fields:{game:{stringValue:'kaltoe'}, ts:{timestampValue:new Date().toISOString()}}})}).catch(() => {}); } catch(e){} }
+  async function fsPost(url, body){ const ctrl = new AbortController(), tm = setTimeout(() => ctrl.abort(), 7000); try { const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body), signal: ctrl.signal}); if (!r.ok) throw new Error(r.status); return await r.json(); } finally { clearTimeout(tm); } }
+  async function loadBoard(){
+    if (!REMOTE) return {board: store.get('kf-board', []).sort((a, b) => b.score - a.score).slice(0, LB_LIMIT), remote:false};
+    const rows = await fsPost(`${fsBase()}:runQuery?key=${encodeURIComponent(LEADERBOARD.apiKey)}`, {structuredQuery:{from:[{collectionId: COLLECTION}], orderBy:[{field:{fieldPath:'score'}, direction:'DESCENDING'}], limit: LB_LIMIT}});
+    return {remote:true, board: rows.filter(r => r.document).map(r => { const f = r.document.fields || {}; return {name: String((f.name && f.name.stringValue) || '?').slice(0, 12), score: +((f.score && f.score.integerValue) || 0), dist: +((f.dist && f.dist.integerValue) || 0)}; })};
+  }
+  async function saveEntry(e){
+    if (!REMOTE){ const b = store.get('kf-board', []); b.push(e); b.sort((a, c) => c.score - a.score); store.set('kf-board', b.slice(0, LB_LIMIT)); return; }
+    await fsPost(`${fsBase()}/${COLLECTION}?key=${encodeURIComponent(LEADERBOARD.apiKey)}`, {fields:{name:{stringValue: e.name}, score:{integerValue: String(e.score)}, dist:{integerValue: String(e.dist)}, ts:{timestampValue: new Date().toISOString()}}});
+  }
+  async function submitScore(sc, d, el){
+    el.textContent = '순위 확인 중…';
+    try { if (sc > 0 && sc > submittedBest){ await saveEntry({name: playerName(), score: sc, dist: d}); submittedBest = sc; store.set('kf-submitted', sc); }
+      const {board: b, remote} = await loadBoard(), above = b.filter(r => r.score > sc).length, where = remote ? '전체' : '이 기기';
+      el.textContent = `${playerName()} · ${where} ${above + 1}위`;
+    } catch(err){ el.textContent = '순위 서버에 연결하지 못했어요'; }
+  }
+  const rankPanel = $('rankPanel');
+  async function openRank(){
+    rankPanel.hidden = false; $('rankClose').focus(); const list = $('rankList'), note = $('rankNote'); list.textContent = ''; note.textContent = '불러오는 중…';
+    try { const {board: b, remote} = await loadBoard(); note.textContent = remote ? '전체 TOP 30' : '온라인 순위가 아직 연결되지 않아 이 기기 기록만 보여요'; if (!b.length) note.textContent += ' · 아직 기록이 없어요';
+      const me = playerName();
+      b.slice(0, 30).forEach((r, i) => { const li = document.createElement('li'); if (r.name === me) li.className = 'me';
+        const rk = document.createElement('span'); rk.className = 'rk'; rk.textContent = i + 1;
+        const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = r.name; const m = document.createElement('small'); m.textContent = `${r.dist}m`; nm.appendChild(m);
+        const sc = document.createElement('b'); sc.textContent = r.score.toLocaleString(); li.append(rk, nm, sc); list.appendChild(li); });
+    } catch(err){ note.textContent = '순위를 불러오지 못했어요'; }
+  }
+  ['rankBtn', 'rankBtn2'].forEach(id => $(id).addEventListener('click', openRank));
+  $('rankClose').addEventListener('click', () => { rankPanel.hidden = true; });
+  rankPanel.addEventListener('pointerdown', e => { if (e.target === rankPanel) rankPanel.hidden = true; });
+  $('shareBtn').addEventListener('click', async () => {
+    const el = $('myRank'), text = `${shareText} — ${playerName()}\n${location.href.split('#')[0]}`;
+    try { if (navigator.share){ await navigator.share({title:'칼퇴 박대리', text}); return; } } catch(err){ if (err && err.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(text); el.textContent = '복사했어요'; } catch(err){ el.textContent = text; }
+  });
+
+  hud(); requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
